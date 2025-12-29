@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Мониторинг — Свердловская обл.</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<header>
+<h1>Мониторинг данных (Свердловская область)</h1>
+</header>
+<main>
+<div id="map"></div>
+<section id="controls">
+<input id="filter" placeholder="Поиск по названию" />
+<button id="refresh">Обновить</button>
+</section>
+<section id="table">
+<table>
+<thead><tr><th>Пост</th><th>Статус</th><th>Последние данные</th></tr></thead>
+<tbody id="rows"></tbody>
+</table>
+</section>
+</main>
+
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="main.js"></script>
+</body>
+</html>
