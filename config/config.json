@@ -1,0 +1,6 @@
+{
+"green_hours":24,
+"yellow_hours":48,
+"check_frequency_cron":"0 */6 * * *",
+"notify_daily":true
+}
