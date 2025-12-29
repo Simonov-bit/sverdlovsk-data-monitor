@@ -1,0 +1,58 @@
+name: Scrape and publish
+on:
+schedule:
+- cron: '0 */6 * * *' # default: каждые 6 часов — менять в config
+workflow_dispatch: {}
+
+
+jobs:
+build:
+runs-on: ubuntu-latest
+steps:
+- name: Checkout
+uses: actions/checkout@v4
+
+
+- name: Set up Python
+uses: actions/setup-python@v4
+with:
+python-version: '3.10'
+
+
+- name: Install deps
+run: |
+python -m pip install --upgrade pip
+pip install -r scraper/requirements.txt
+
+
+- name: Run scraper
+env:
+SITE_USER: ${{ secrets.SITE_USER }}
+SITE_PASS: ${{ secrets.SITE_PASS }}
+GREEN_HOURS: ${{ secrets.GREEN_HOURS }}
+YELLOW_HOURS: ${{ secrets.YELLOW_HOURS }}
+run: |
+python scraper/scraper.py > out.json
+
+
+- name: Commit data to gh-pages branch
+uses: actions/checkout@v4
+with:
+persist-credentials: true
+fetch-depth: 0
+
+
+- name: Create gh-pages branch if missing
+run: |
+git config user.name "github-actions[bot]"
+git config user.email "github-actions[bot]@users.noreply.github.com"
+if git show-ref --quiet refs/heads/gh-pages; then echo 'gh-pages exists'; else git checkout --orphan gh-pages; git rm -rf . || true; git commit --allow-empty -m "Initialize gh-pages"; git push origin gh-pages; git checkout -;
+
+
+- name: Update data file and push
+run: |
+mkdir -p frontend/data
+python -c "import json,sys; print('write'); data=json.load(open('out.json','r')); open('frontend/data/status.json','w',encoding='utf-8').write(json.dumps(data,ensure_ascii=False,indent=2))"
+git add frontend/data/status.json
+git commit -m "Update status.json" || echo 'no changes'
+git push origin HEAD:gh-pages
